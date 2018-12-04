@@ -5,9 +5,22 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import java.lang.reflect.Modifier;
+import java.util.List;
 import cl.telematica.basicconnectionexample.connection.HttpServerConnection;
+import cl.telematica.basicconnectionexample.connection.MyApiAdapter;
+import cl.telematica.basicconnectionexample.connection.MyApiService;
 import cl.telematica.basicconnectionexample.models.Libro;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -30,7 +43,34 @@ public class MainActivity extends AppCompatActivity {
         mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
+
+        String baseUrl = "http://www.mocky.io/v2/";
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        MyApiService s = retrofit.create(MyApiService.class);
+
+        Call<List<Libro>> repos = s.getLibros();
+
+        repos.enqueue(new Callback<List<Libro>>() {
+            @Override
+            public void onResponse(Call<List<Libro>> call, Response<List<Libro>> response) {
+                String result = new Gson().toJson(response.body()).toString();
+                mAdapter = new UIAdapter(Libro.getLibros(result));
+                mRecyclerView.setAdapter(mAdapter);
+                Log.w("2.0 getFeed ",  result);
+            }
+
+            @Override
+            public void onFailure(Call<List<Libro>> call, Throwable t) {
+
+            }
+        });
+        // System.out.println(123);
+
+        /* AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
             @Override
             protected void onPreExecute()
             {
@@ -53,5 +93,6 @@ public class MainActivity extends AppCompatActivity {
         };
 
         task.execute();
+        */
     }
 }

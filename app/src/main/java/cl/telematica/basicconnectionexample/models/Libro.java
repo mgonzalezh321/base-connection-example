@@ -1,5 +1,7 @@
 package cl.telematica.basicconnectionexample.models;
 
+import com.google.gson.annotations.Expose;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -8,12 +10,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Libro {
-
+    @Expose
     private int id;
+
+    @Expose
+    private String photo;
+
+    @Expose
     private String nombre;
+
+    @Expose
     private String editorial;
+
+    @Expose
     private String genero;
+
+    @Expose
     private int autor;
+
+    public void setPhoto(String photo) { this.photo = photo; }
+
+    public String getPhoto() { return photo; }
 
     public void setId(int id){
         this.id = id;
@@ -71,6 +88,7 @@ public class Libro {
                 libro.setEditorial(obj.getString("editorial"));
                 libro.setGenero(obj.getString("genero"));
                 libro.setAutor(obj.getInt("autor"));
+                libro.setPhoto(obj.getString("photo"));
 
                 lista.add(libro);
             }
